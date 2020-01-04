@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # RHCOS images
-
 RHCOS_IMAGES_BASE_URI=""
 
 # Map of image name to sha256
@@ -81,14 +80,33 @@ export RHCOS_METAL_IMAGES
 # TODO: Is there a uniform base URL to use here like there is for images?
 
 # 4.3/4.4 are special cases, and requires getting the latest version ID from an index page
-LATEST_4_3="$(curl -sS https://openshift-release-artifacts.svc.ci.openshift.org/ | awk "/4\.3\./ && !(/s390x/ || /ppc64le/)" | tail -1 | cut -d '"' -f 2)"
-LATEST_4_4="$(curl -sS https://openshift-release-artifacts.svc.ci.openshift.org/ | awk "/4\.4\./ && !(/s390x/ || /ppc64le/)" | tail -1 | cut -d '"' -f 2)"
+OPENSHIFT_RELEASE_ARTIFACTS_URL="https://openshift-release-artifacts.svc.ci.openshift.org/"
+AVAILABLE_4_3="$(curl -sS $OPENSHIFT_RELEASE_ARTIFACTS_URL | awk "/4\.3\./ && !(/s390x/ || /ppc64le/)" | cut -d '"' -f 2 | tac)"
+AVAILABLE_4_4="$(curl -sS $OPENSHIFT_RELEASE_ARTIFACTS_URL | awk "/4\.4\./ && !(/s390x/ || /ppc64le/)" | cut -d '"' -f 2 | tac)"
+
+for artifact in $AVAILABLE_4_3
+do
+	if curl --output /dev/null --head --silent --fail \
+		$OPENSHIFT_RELEASE_ARTIFACTS_URL/$artifact/release.txt; then
+		LATEST_4_3="$artifact"
+		break
+	fi
+done
+
+for artifact in $AVAILABLE_4_4
+do
+	if curl --output /dev/null --head --silent --fail \
+		$OPENSHIFT_RELEASE_ARTIFACTS_URL/$artifact/release.txt; then
+		LATEST_4_4="$artifact"
+		break
+	fi
+done
 
 declare -A OCP_BINARIES=(
     [4.1]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.1/"
     [4.2]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.2/"
-    [4.3]="https://openshift-release-artifacts.svc.ci.openshift.org/$LATEST_4_3"
-    [4.4]="https://openshift-release-artifacts.svc.ci.openshift.org/$LATEST_4_4"
+    [4.3]="$OPENSHIFT_RELEASE_ARTIFACTS_URL/$LATEST_4_3"
+    [4.4]="$OPENSHIFT_RELEASE_ARTIFACTS_URL/$LATEST_4_4"
 )
 
 # TODO: remove debug
