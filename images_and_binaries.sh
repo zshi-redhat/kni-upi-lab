@@ -82,7 +82,7 @@ export RHCOS_METAL_IMAGES
 # 4.3/4.4 are special cases, and requires getting the latest version ID from an index page
 OPENSHIFT_RELEASE_ARTIFACTS_URL="https://openshift-release-artifacts.svc.ci.openshift.org/"
 AVAILABLE_4_3="$(curl -sS $OPENSHIFT_RELEASE_ARTIFACTS_URL | awk "/4\.3\./ && !(/s390x/ || /ppc64le/)" | cut -d '"' -f 2 | tac)"
-AVAILABLE_4_4="$(curl -sS $OPENSHIFT_RELEASE_ARTIFACTS_URL | awk "/4\.4\./ && !(/s390x/ || /ppc64le/ || /nightly/)" | cut -d '"' -f 2 | tac)"
+AVAILABLE_4_4="$(curl -sS $OPENSHIFT_RELEASE_ARTIFACTS_URL | awk "/4\.4\./ && !(/s390x/ || /ppc64le/)" | cut -d '"' -f 2 | tac)"
 
 for artifact in $AVAILABLE_4_3
 do
