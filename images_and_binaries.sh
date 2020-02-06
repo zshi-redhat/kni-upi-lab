@@ -12,7 +12,7 @@ declare -A RHCOS_BOOT_IMAGES
 # Map of boot type to raw metal image
 declare -A RHCOS_METAL_IMAGES
 
-if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ]; then
+if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.3" ] || [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ]; then
     BUILDS_JSON="$(curl -sS https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-$OPENSHIFT_RHCOS_MAJOR_REL/builds.json)"
 
     if [[ -z "$OPENSHIFT_RHCOS_MINOR_REL" ]]; then
@@ -79,9 +79,19 @@ export RHCOS_METAL_IMAGES
 # OCP binaries
 # TODO: Is there a uniform base URL to use here like there is for images?
 
-# 4.4 are special cases, and requires getting the latest version ID from an index page
+# 4.3/4.4 are special cases, and requires getting the latest version ID from an index page
 OPENSHIFT_RELEASE_ARTIFACTS_URL="https://openshift-release-artifacts.svc.ci.openshift.org/"
+AVAILABLE_4_3="$(curl -sS $OPENSHIFT_RELEASE_ARTIFACTS_URL | awk "/4\.3\./ && !(/s390x/ || /ppc64le/)" | cut -d '"' -f 2 | tac)"
 AVAILABLE_4_4="$(curl -sS $OPENSHIFT_RELEASE_ARTIFACTS_URL | awk "/4\.4\./ && !(/s390x/ || /ppc64le/)" | cut -d '"' -f 2 | tac)"
+
+for artifact in $AVAILABLE_4_3
+do
+	if curl --output /dev/null --head --silent --fail \
+		$OPENSHIFT_RELEASE_ARTIFACTS_URL/$artifact/release.txt; then
+		LATEST_4_3="$artifact"
+		break
+	fi
+done
 
 for artifact in $AVAILABLE_4_4
 do
@@ -95,7 +105,7 @@ done
 declare -A OCP_BINARIES=(
     [4.1]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.1/"
     [4.2]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.2/"
-    [4.3]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.3/"
+    [4.3]="$OPENSHIFT_RELEASE_ARTIFACTS_URL/$LATEST_4_3"
     [4.4]="$OPENSHIFT_RELEASE_ARTIFACTS_URL/$LATEST_4_4"
 )
 
@@ -109,8 +119,8 @@ OCP_INSTALL_BINARY_URL=""
 
 FIELD_SELECTOR=8
 
-if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ]; then
-    # HACK: 4.4 have a different HTML structure than the rest
+if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.3" ] || [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ]; then
+    # HACK: 4.3/4.4 have a different HTML structure than the rest
     FIELD_SELECTOR=2
 fi
 
