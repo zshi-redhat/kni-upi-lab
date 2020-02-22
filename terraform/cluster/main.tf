@@ -59,8 +59,8 @@ module "bootstrap" {
   source = "./bootstrap"
 
   pxe_kernel_args = "${concat([
-    (var.bootstrap_provisioning_interface != "" ? "ip=${var.bootstrap_provisioning_interface}:dhcp" : " "),
     (var.bootstrap_baremetal_interface != "" ? "ip=${var.bootstrap_baremetal_interface}:dhcp" : " "),
+    (var.bootstrap_provisioning_interface != "" ? "ip=${var.bootstrap_provisioning_interface}:dhcp" : " "),
   ], local.kernel_args)}"
 
   pxe_kernel             = "${local.pxe_kernel}"
