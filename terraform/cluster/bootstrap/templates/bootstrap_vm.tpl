@@ -38,7 +38,7 @@
 <interface type='bridge'>
 <mac address='52:54:00:82:68:3e'/>
 <source bridge='${baremetal_bridge}'/>
-<target dev='vnet1'/>
+<target dev='vnet0'/>
 <model type='rtl8139'/>
 <alias name='net0'/>
 <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
@@ -46,7 +46,7 @@
 <interface type='bridge'>
 <mac address='${bootstrap_mac_address}'/>
 <source bridge='${provisioning_bridge}'/>
-<target dev='vnet0'/>
+<target dev='vnet1'/>
 <model type='rtl8139'/>
 <alias name='net1'/>
 <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
