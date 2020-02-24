@@ -7,8 +7,6 @@
 </resource>
 <os>
 <type arch='x86_64' >hvm</type>
-<boot dev='hd'/>
-<boot dev='network'/>
 </os>
 <features>
 <acpi/>
@@ -32,6 +30,7 @@
 <source file='${bootstrap_img}'/>
 <backingStore/>
 <target dev='vda' bus='virtio'/>
+<boot order='1'/>
 <alias name='virtio-disk0'/>
 <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
 </disk>
@@ -40,6 +39,7 @@
 <source bridge='${baremetal_bridge}'/>
 <target dev='vnet0'/>
 <model type='rtl8139'/>
+<boot order='3'/>
 <alias name='net0'/>
 <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
 </interface>
@@ -48,6 +48,7 @@
 <source bridge='${provisioning_bridge}'/>
 <target dev='vnet1'/>
 <model type='rtl8139'/>
+<boot order='2'/>
 <alias name='net1'/>
 <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
 </interface>
