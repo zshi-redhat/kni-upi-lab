@@ -98,7 +98,7 @@ LATEST_4_4="$(curl -sS https://openshift-release-artifacts.svc.ci.openshift.org/
 declare -A OCP_BINARIES=(
     [4.1]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.1/"
     [4.2]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.2/"
-    [4.3]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.3/"
+    [4.3]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.3.3/"
     [4.4]="https://openshift-release-artifacts.svc.ci.openshift.org/$LATEST_4_4"
 )
 
