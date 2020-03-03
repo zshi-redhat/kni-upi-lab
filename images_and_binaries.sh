@@ -12,8 +12,10 @@ declare -A RHCOS_BOOT_IMAGES
 # Map of boot type to raw metal image
 declare -A RHCOS_METAL_IMAGES
 
-if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.3" ] || [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ]; then
-    BUILDS_JSON="$(curl -sS https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-$OPENSHIFT_RHCOS_MAJOR_REL/builds.json)"
+# 2/6/2020: 4.4/4.5 must be acquired from internal Red Hat CI registry, because it is not yet available 
+# from the official mirror
+if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ] || [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.5" ]; then
+    BUILDS_JSON="$(curl -sS https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-4.4/builds.json)"
 
     if [[ -z "$OPENSHIFT_RHCOS_MINOR_REL" ]]; then
         # If a minor release wasn't set, get latest
@@ -22,7 +24,7 @@ if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.3" ] || [ "$OPENSHIFT_RHCOS_MAJOR_REL" =
         OPENSHIFT_RHCOS_MINOR_REL="$LATEST"
     fi
 
-    RHCOS_IMAGES_BASE_URI="https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-$OPENSHIFT_RHCOS_MAJOR_REL/$OPENSHIFT_RHCOS_MINOR_REL/x86_64/"
+    RHCOS_IMAGES_BASE_URI="https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-4.4/$OPENSHIFT_RHCOS_MINOR_REL/x86_64/"
 
     META_JSON="$(curl -sS "$RHCOS_IMAGES_BASE_URI"meta.json)"
 
@@ -79,34 +81,16 @@ export RHCOS_METAL_IMAGES
 # OCP binaries
 # TODO: Is there a uniform base URL to use here like there is for images?
 
-# 4.3/4.4 are special cases, and requires getting the latest version ID from an index page
-OPENSHIFT_RELEASE_ARTIFACTS_URL="https://openshift-release-artifacts.svc.ci.openshift.org/"
-AVAILABLE_4_3="$(curl -sS $OPENSHIFT_RELEASE_ARTIFACTS_URL | awk "/4\.3\./ && !(/s390x/ || /ppc64le/)" | cut -d '"' -f 2 | tac)"
-AVAILABLE_4_4="$(curl -sS $OPENSHIFT_RELEASE_ARTIFACTS_URL | awk "/4\.4\./ && !(/s390x/ || /ppc64le/)" | cut -d '"' -f 2 | tac)"
-
-for artifact in $AVAILABLE_4_3
-do
-	if curl --output /dev/null --head --silent --fail \
-		$OPENSHIFT_RELEASE_ARTIFACTS_URL/$artifact/release.txt; then
-		LATEST_4_3="$artifact"
-		break
-	fi
-done
-
-for artifact in $AVAILABLE_4_4
-do
-	if curl --output /dev/null --head --silent --fail \
-		$OPENSHIFT_RELEASE_ARTIFACTS_URL/$artifact/release.txt; then
-		LATEST_4_4="$artifact"
-		break
-	fi
-done
+# 4.4/4.5 are special cases, and requires getting the latest version ID from an index page
+LATEST_4_4="$(curl -sS https://openshift-release-artifacts.svc.ci.openshift.org/ | awk "/4\.4\./ && !(/s390x/ || /ppc64le/)" | tail -1 | cut -d '"' -f 2)"
+LATEST_4_5="$(curl -sS https://openshift-release-artifacts.svc.ci.openshift.org/ | awk "/4\.5\./ && !(/s390x/ || /ppc64le/ || /nightly/)" | tail -1 | cut -d '"' -f 2)"
 
 declare -A OCP_BINARIES=(
     [4.1]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.1/"
     [4.2]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.2/"
-    [4.3]="$OPENSHIFT_RELEASE_ARTIFACTS_URL/$LATEST_4_3"
-    [4.4]="$OPENSHIFT_RELEASE_ARTIFACTS_URL/$LATEST_4_4"
+    [4.3]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.3/"
+    [4.4]="https://openshift-release-artifacts.svc.ci.openshift.org/$LATEST_4_4"
+    [4.5]="https://openshift-release-artifacts.svc.ci.openshift.org/$LATEST_4_5"
 )
 
 # TODO: remove debug
@@ -119,8 +103,8 @@ OCP_INSTALL_BINARY_URL=""
 
 FIELD_SELECTOR=8
 
-if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.3" ] || [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ]; then
-    # HACK: 4.3/4.4 have a different HTML structure than the rest
+if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ] || [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.5" ]; then
+    # HACK: 4.4/4.5 have different HTML structure than the rest
     FIELD_SELECTOR=2
 fi
 
