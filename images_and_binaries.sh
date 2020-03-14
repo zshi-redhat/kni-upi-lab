@@ -83,7 +83,7 @@ export RHCOS_METAL_IMAGES
 
 # 4.4/4.5 are special cases, and requires getting the latest version ID from an index page
 LATEST_4_4="$(curl -sS https://openshift-release-artifacts.svc.ci.openshift.org/ | awk "/4\.4\./ && !(/s390x/ || /ppc64le/)" | tail -1 | cut -d '"' -f 2)"
-LATEST_4_5="$(curl -sS https://openshift-release-artifacts.svc.ci.openshift.org/ | awk "/4\.5\./ && !(/s390x/ || /ppc64le/ || /nightly/)" | tail -1 | cut -d '"' -f 2)"
+LATEST_4_5="$(curl -sS https://openshift-release-artifacts.svc.ci.openshift.org/ | awk "/4\.5\./ && !(/s390x/ || /ppc64le/)" | tail -1 | cut -d '"' -f 2)"
 
 declare -A OCP_BINARIES=(
     [4.1]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.1/"
