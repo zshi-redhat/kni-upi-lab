@@ -21,18 +21,20 @@ if [[ "$OS_NAME" == "rhel" ]]; then
         exit 1
     fi
 
-    if [[ "$OS_VERSION" == "7" || "$OS_VERSION" == "8" ]]; then
-        PIP_PACKAGE="python2-pip"
-    else
-        echo "RHEL version $OS_VERSION is not supported!"
-        exit 1
-    fi
-
     curl -o /tmp/epel-release.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-$OS_VERSION.noarch.rpm
     EPEL_PACKAGE="/tmp/epel-release.rpm"
 
     # Enable other needed RPMs
     sudo subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"  --enable "rhel-ha-for-rhel-*-server-rpms"
+fi
+
+if [[ "$OS_NAME" == "rhel" || "$OS_NAME" == "centos" ]]; then
+    if [[ "$OS_VERSION" == "7" || "$OS_VERSION" == "8" ]]; then
+        PIP_PACKAGE="python2-pip"
+    else
+        echo "OS version $OS_NAME $OS_VERSION is not supported!"
+        exit 1
+    fi
 fi
 
 ###--------------###
