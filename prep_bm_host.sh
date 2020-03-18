@@ -22,13 +22,6 @@ if [[ "$OS_NAME" == "rhel" ]]; then
         exit 1
     fi
 
-    if [[ "$OS_VERSION" == "7" || "$OS_VERSION" == "8" ]]; then
-        PIP_PACKAGE="python2-pip"
-    else
-        echo "RHEL version $OS_VERSION is not supported!"
-        exit 1
-    fi
-
     curl -o /tmp/epel-release.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-$OS_VERSION.noarch.rpm
     EPEL_PACKAGE="/tmp/epel-release.rpm"
 
@@ -38,6 +31,15 @@ else
     if [[ "$OS_VERSION" == "8" ]]; then
       PIP_PACKAGE="python2-pip"
       PIP_COMMAND="pip2"
+    fi
+fi
+
+if [[ "$OS_NAME" == "rhel" || "$OS_NAME" == "centos" ]]; then
+    if [[ "$OS_VERSION" == "7" || "$OS_VERSION" == "8" ]]; then
+        PIP_PACKAGE="python2-pip"
+    else
+        echo "OS version $OS_NAME $OS_VERSION is not supported!"
+        exit 1
     fi
 fi
 
@@ -106,6 +108,7 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable vbmcd
 sudo systemctl start vbmcd
+sudo pip2 install yq
 
 ###------------------------------------------------###
 ### Need interface input from user via environment ###
