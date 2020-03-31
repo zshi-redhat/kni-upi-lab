@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 # RHCOS images
 
 RHCOS_IMAGES_BASE_URI=""
@@ -132,3 +132,4 @@ fi
 
 export OCP_CLIENT_BINARY_URL
 export OCP_INSTALL_BINARY_URL
+set +x
