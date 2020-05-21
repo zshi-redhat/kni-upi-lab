@@ -15,7 +15,7 @@ declare -A RHCOS_METAL_IMAGES
 
 # 2/6/2020: 4.4 must be acquired from internal Red Hat CI registry, because it is not yet available 
 # from the official mirror
-if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ]; then
+if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.5" ]; then
     BUILDS_JSON="$(curl -sS https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-$OPENSHIFT_RHCOS_MAJOR_REL/builds.json)"
 
     if [[ -z "$OPENSHIFT_RHCOS_MINOR_REL" ]]; then
@@ -56,7 +56,7 @@ else
     # Now handle metal images and map file names to sha256 values
     FILENAME_LIST=("${RHCOS_BOOT_IMAGES["kernel"]}" "${RHCOS_BOOT_IMAGES["ramdisk"]}")
     
-    if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.3" ]; then
+    if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ]; then
         # 4.3 uses one unified metal image 
 
         UNIFIED_METAL="$(echo "$SHA256" | grep x86_64-metal | rev | cut -d ' ' -f 1 | rev)"
@@ -113,7 +113,7 @@ declare -A OCP_BINARIES=(
     [4.1]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.1/"
     [4.2]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.2/"
     [4.3]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.3/"
-    [4.4]="https://openshift-release-artifacts.svc.ci.openshift.org/$LATEST_4_4"
+    [4.4]="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.4/"
 )
 
 # TODO: remove debug
@@ -126,7 +126,7 @@ OCP_INSTALL_BINARY_URL=""
 
 FIELD_SELECTOR=8
 
-if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.4" ]; then
+if [ "$OPENSHIFT_RHCOS_MAJOR_REL" == "4.3" ]; then
     # HACK: 4.4 has a different HTML structure than the rest
     FIELD_SELECTOR=2
 fi
